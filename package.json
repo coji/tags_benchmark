@@ -1,16 +1,32 @@
 {
   "name": "tags_benchmark",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "PostgreSQL タグ管理パフォーマンス比較",
+  "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "tsx src/benchmark.ts",
+    "setup": "prisma migrate reset --force && prisma db push",
+    "benchmark": "tsx src/benchmark.ts",
+    "benchmark:search": "tsx src/benchmark.ts --type=search",
+    "benchmark:write": "tsx src/benchmark.ts --type=write",
+    "db:reset": "prisma migrate reset --force"
   },
-  "keywords": [],
+  "keywords": [
+    "postgresql",
+    "benchmark",
+    "performance"
+  ],
   "author": "",
   "license": "ISC",
   "packageManager": "pnpm@10.11.0",
+  "dependencies": {
+    "@prisma/client": "^6.8.2",
+    "prisma": "^6.8.2"
+  },
   "devDependencies": {
-    "@biomejs/biome": "1.9.4"
+    "@biomejs/biome": "1.9.4",
+    "@types/node": "^22.15.21",
+    "tsx": "^4.0.0",
+    "typescript": "^5.0.0"
   }
 }

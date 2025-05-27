@@ -1,0 +1,54 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Normalized approach
+model Person {
+  id        Int         @id @default(autoincrement())
+  name      String
+  personTags PersonTag[]
+
+  @@map("persons")
+}
+
+model Tag {
+  id        Int         @id @default(autoincrement())
+  name      String      @unique
+  personTags PersonTag[]
+
+  @@map("tags")
+}
+
+model PersonTag {
+  personId  Int @map("person_id")
+  tagId     Int @map("tag_id")
+  person    Person @relation(fields: [personId], references: [id], onDelete: Cascade)
+  tag       Tag    @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@id([personId, tagId])
+  @@index([tagId])
+  @@map("person_tags")
+}
+
+// JSONB approach
+model PersonJsonb {
+  id    Int    @id @default(autoincrement())
+  name  String
+  tags  Json
+
+  @@map("persons_jsonb")
+}
+
+// Array approach  
+model PersonArray {
+  id    Int      @id @default(autoincrement())
+  name  String
+  tags  String[]
+
+  @@map("persons_array")
+}
