@@ -41,6 +41,7 @@ model PersonJsonb {
   name  String
   tags  Json
 
+  @@index([tags], type: Gin)
   @@map("persons_jsonb")
 }
 
@@ -50,5 +51,6 @@ model PersonArray {
   name  String
   tags  String[]
 
+  @@index([tags], type: Gin)
   @@map("persons_array")
 }

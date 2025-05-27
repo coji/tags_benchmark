@@ -4,9 +4,7 @@ export class ArrayModel {
   constructor(private prisma: PrismaClient) {}
 
   async setup() {
-    await this.prisma.$executeRaw`
-      CREATE INDEX IF NOT EXISTS idx_person_tags_gin ON persons_array USING gin(tags);
-    `;
+    // インデックスはPrismaスキーマで定義済み
   }
 
   async insertPerson(name: string, tags: string[]) {

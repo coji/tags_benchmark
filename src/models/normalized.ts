@@ -4,9 +4,7 @@ export class NormalizedModel {
   constructor(private prisma: PrismaClient) {}
 
   async setup() {
-    await this.prisma.$executeRaw`
-      CREATE INDEX IF NOT EXISTS idx_person_tag_tag ON person_tags(tag_id);
-    `;
+    // インデックスはPrismaスキーマで定義済み
   }
 
   async insertPerson(name: string, tags: string[]) {

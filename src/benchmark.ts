@@ -247,6 +247,10 @@ function parseArgs(): BenchmarkConfig {
       config.dataSize = Number.parseInt(arg.split('=')[1]);
     } else if (arg.startsWith('--iterations=')) {
       config.searchIterations = Number.parseInt(arg.split('=')[1]);
+    } else if (arg.startsWith('--write-size=')) {
+      config.writeTestSize = Number.parseInt(arg.split('=')[1]);
+    } else if (arg.startsWith('--warmup-iterations=')) {
+      config.warmupIterations = Number.parseInt(arg.split('=')[1]);
     }
   }
 
