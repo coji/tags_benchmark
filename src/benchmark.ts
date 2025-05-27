@@ -203,7 +203,7 @@ class BenchmarkRunner {
 
       const modelsToTest: ModelType[] = config.model
         ? [config.model]
-        : ['normalized', 'jsonb', 'array'];
+        : ['jsonb', 'array'];
 
       for (const modelType of modelsToTest) {
         await this.cleanupData();
@@ -232,7 +232,7 @@ function parseArgs(): BenchmarkConfig {
   const args = process.argv.slice(2);
   const config: BenchmarkConfig = {
     type: 'all',
-    dataSize: 10000,
+    dataSize: 100000,
     searchIterations: 1000,
     warmupIterations: 100,
     writeTestSize: 10000,
