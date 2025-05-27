@@ -14,10 +14,10 @@ PostgreSQLにおける「人 + タグ」管理システムの3つの実装アプ
 
 ## データ仕様
 
-- **総人数**: 10,000人
-- **タグプール**: `["engineer", "remote", "frontend", "backend", "manager"]`
-- **タグ割当**: 1人あたりランダムに1～3個
-- **分布**: 各タグ約30-50%の人に割当（現実的な偏り）
+- **総人数**: 1,000,000人
+- **タグプール**: `["engineer", "remote", "frontend", "backend", "manager", "senior", "junior", "fullstack", "devops", "qa", "designer", "product", "marketing", "sales", "support"]`
+- **タグ割当**: 1人あたりランダムに5～15個（平均10個）
+- **分布**: 各タグ約60-80%の人に割当（現実的な偏り）
 
 ## ベンチマーク項目
 
@@ -27,9 +27,9 @@ PostgreSQLにおける「人 + タグ」管理システムの3つの実装アプ
 
 | テストケース | 条件 | 期待結果数 |
 |-------------|------|-----------|
-| 単一タグ | `engineer` | ~3,000-5,000人 |
-| AND検索 | `engineer AND remote` | ~1,000-2,000人 |
-| OR検索 | `frontend OR backend` | ~5,000-7,000人 |
+| 単一タグ | `engineer` | ~600,000-800,000人 |
+| AND検索 | `engineer AND remote` | ~400,000-600,000人 |
+| OR検索 | `frontend OR backend` | ~800,000-1,000,000人 |
 
 ### ✍️ 書き込み性能テスト
 
@@ -135,14 +135,18 @@ benchmark-tags/
 
 ```sh
 === SEARCH BENCHMARK ===
-[NORMALIZED] engineer: avg=0.8ms, p50=0.7ms, p95=1.2ms (1000 queries)
-[JSONB]      engineer: avg=0.6ms, p50=0.5ms, p95=0.9ms (1000 queries)
-[ARRAY]      engineer: avg=0.5ms, p50=0.4ms, p95=0.8ms (1000 queries)
+[NORMALIZED] engineer: avg=2.1ms, p50=1.8ms, p95=3.2ms (1000 queries, total=2.1s)
+[JSONB]      engineer: avg=1.4ms, p50=1.2ms, p95=2.1ms (1000 queries, total=1.4s)
+[ARRAY]      engineer: avg=1.2ms, p50=1.0ms, p95=1.8ms (1000 queries, total=1.2s)
+
+[NORMALIZED] engineer AND remote: avg=3.5ms, p50=3.1ms, p95=5.2ms (1000 queries, total=3.5s)
+[JSONB]      engineer AND remote: avg=2.3ms, p50=2.0ms, p95=3.4ms (1000 queries, total=2.3s)
+[ARRAY]      engineer AND remote: avg=2.1ms, p50=1.8ms, p95=3.1ms (1000 queries, total=2.1s)
 
 === WRITE BENCHMARK ===
-[NORMALIZED] Single: 2.3ms/record, Batch: 0.8ms/record
-[JSONB]      Single: 1.1ms/record, Batch: 0.3ms/record
-[ARRAY]      Single: 1.0ms/record, Batch: 0.3ms/record
+[NORMALIZED] Single: 4.5ms/record (1000 records, total=4.5s), Batch: 1.2ms/record (1000 records, total=1.2s)
+[JSONB]      Single: 2.1ms/record (1000 records, total=2.1s), Batch: 0.5ms/record (1000 records, total=0.5s)
+[ARRAY]      Single: 1.9ms/record (1000 records, total=1.9s), Batch: 0.4ms/record (1000 records, total=0.4s)
 ```
 
 ## 実行コマンド

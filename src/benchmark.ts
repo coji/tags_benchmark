@@ -2,11 +2,7 @@ import { PrismaClient } from '@prisma/client';
 import { NormalizedModel } from './models/normalized.js';
 import { JsonbModel } from './models/jsonb.js';
 import { ArrayModel } from './models/array.js';
-import {
-  PersonData,
-  generatePeople,
-  getTagPool,
-} from './utils/data-generator.js';
+import { generatePeople } from './utils/data-generator.js';
 import { Timer } from './utils/timer.js';
 
 type ModelType = 'normalized' | 'jsonb' | 'array';
@@ -99,12 +95,13 @@ class BenchmarkRunner {
       }
 
       const result = timer.getResult();
+      const totalTime = (result.avg * result.count) / 1000;
       console.log(
-        `${testCase.name}: avg=${Timer.formatMs(
+        `[${modelType.toUpperCase()}] ${testCase.name}: avg=${Timer.formatMs(
           result.avg
         )}, p50=${Timer.formatMs(result.p50)}, p95=${Timer.formatMs(
           result.p95
-        )} (${result.count} queries)`
+        )} (${result.count} queries, total=${totalTime.toFixed(1)}s)`
       );
     }
   }
@@ -124,7 +121,8 @@ class BenchmarkRunner {
     }
 
     const singleResult = singleTimer.getResult();
-    console.log(`Single insert: ${Timer.formatMs(singleResult.avg)}/record`);
+    const singleTotalTime = (singleResult.avg * singleResult.count) / 1000;
+    console.log(`[${modelType.toUpperCase()}] Single: ${Timer.formatMs(singleResult.avg)}/record (${singleResult.count} records, total=${singleTotalTime.toFixed(1)}s)`);
 
     // Batch insert test
     const batchTimer = new Timer();
@@ -134,7 +132,8 @@ class BenchmarkRunner {
 
     const batchResult = batchTimer.getResult();
     const batchAvgPerRecord = batchResult.avg / config.writeTestSize;
-    console.log(`Batch insert: ${Timer.formatMs(batchAvgPerRecord)}/record`);
+    const batchTotalTime = batchResult.avg / 1000;
+    console.log(`[${modelType.toUpperCase()}] Batch: ${Timer.formatMs(batchAvgPerRecord)}/record (${config.writeTestSize} records, total=${batchTotalTime.toFixed(1)}s)`);
 
     // Update test
     const updateTimer = new Timer();
@@ -151,7 +150,8 @@ class BenchmarkRunner {
     }
 
     const updateResult = updateTimer.getResult();
-    console.log(`Update tags: ${Timer.formatMs(updateResult.avg)}/record`);
+    const updateTotalTime = (updateResult.avg * updateResult.count) / 1000;
+    console.log(`[${modelType.toUpperCase()}] Update: ${Timer.formatMs(updateResult.avg)}/record (${updateResult.count} records, total=${updateTotalTime.toFixed(1)}s)`);
   }
 
   async cleanupData() {
@@ -196,7 +196,7 @@ function parseArgs(): BenchmarkConfig {
   const args = process.argv.slice(2);
   const config: BenchmarkConfig = {
     type: 'all',
-    dataSize: 10000,
+    dataSize: 1000000,
     searchIterations: 1000,
     warmupIterations: 100,
     writeTestSize: 1000,

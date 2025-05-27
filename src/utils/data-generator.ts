@@ -1,4 +1,20 @@
-const TAG_POOL = ['engineer', 'remote', 'frontend', 'backend', 'manager'];
+const TAG_POOL = [
+  'engineer',
+  'remote', 
+  'frontend',
+  'backend',
+  'manager',
+  'senior',
+  'junior',
+  'fullstack',
+  'devops',
+  'qa',
+  'designer',
+  'product',
+  'marketing',
+  'sales',
+  'support'
+];
 
 export interface PersonData {
   name: string;
@@ -6,7 +22,7 @@ export interface PersonData {
 }
 
 function getRandomTags(): string[] {
-  const tagCount = Math.floor(Math.random() * 3) + 1;
+  const tagCount = Math.floor(Math.random() * 11) + 5; // 5-15 tags
   const shuffled = [...TAG_POOL].sort(() => 0.5 - Math.random());
   return shuffled.slice(0, tagCount);
 }
