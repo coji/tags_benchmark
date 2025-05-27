@@ -154,18 +154,18 @@ benchmark-tags/
 ```bash
 # 環境準備
 docker compose up -d
-npm install
-npm run setup
+pnpm install
+pnpm run setup
 
 # 全ベンチマーク実行
-npm run benchmark
+pnpm run benchmark
 
 # 個別実行
-npm run benchmark -- --type=search --model=normalized
-npm run benchmark -- --type=write --model=jsonb
+pnpm run benchmark -- --type=search --model=normalized
+pnpm run benchmark -- --type=write --model=jsonb
 
 # 開発時の実行
-npm run dev
+pnpm run dev
 ```
 
 ## 評価観点
@@ -178,7 +178,7 @@ npm run dev
 ## Docker 設定
 
 ```yaml
-# docker-compose.yml
+# compose.yml
 version: '3.8'
 services:
   postgres:
