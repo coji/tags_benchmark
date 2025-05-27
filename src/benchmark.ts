@@ -97,13 +97,14 @@ class BenchmarkRunner {
       }
 
       const result = timer.getResult();
-      const totalTime = (result.avg * result.count) / 1000;
       console.log(
         `[${modelType.toUpperCase()}] ${testCase.name}: avg=${Timer.formatMs(
           result.avg
         )}, p50=${Timer.formatMs(result.p50)}, p95=${Timer.formatMs(
           result.p95
-        )} (${result.count} queries, total=${totalTime.toFixed(1)}s)`
+        )} (${result.count} queries, total=${Timer.formatSeconds(
+          result.total
+        )})`
       );
     }
   }
@@ -123,13 +124,12 @@ class BenchmarkRunner {
     }
 
     const singleResult = singleTimer.getResult();
-    const singleTotalTime = (singleResult.avg * singleResult.count) / 1000;
     console.log(
       `[${modelType.toUpperCase()}] Single: ${Timer.formatMs(
         singleResult.avg
-      )}/record (${singleResult.count} records, total=${singleTotalTime.toFixed(
-        1
-      )}s)`
+      )}/record (${singleResult.count.toLocaleString()} records, total=${Timer.formatSeconds(
+        singleResult.total
+      )})`
     );
 
     // Batch insert test
@@ -139,23 +139,39 @@ class BenchmarkRunner {
     await batchTimer.measure(() => model.insertPersonsBatch(batchTestData));
 
     const batchResult = batchTimer.getResult();
-    const batchAvgPerRecord = batchResult.avg / config.writeTestSize;
-    const batchTotalTime = batchResult.avg / 1000;
+    const batchAvgPerRecord = batchResult.total / config.writeTestSize;
     console.log(
       `[${modelType.toUpperCase()}] Batch: ${Timer.formatMs(
         batchAvgPerRecord
-      )}/record (${
-        config.writeTestSize
-      } records, total=${batchTotalTime.toFixed(1)}s)`
+      )}/record (${config.writeTestSize.toLocaleString()} records, total=${Timer.formatSeconds(
+        batchResult.total
+      )})`
     );
 
-    // Update test
+    // Update test - Get existing person IDs from the correct table
     const updateTimer = new Timer();
-    // Get actual existing person IDs from the database
-    const existingPersons = await this.prisma.person.findMany({
-      take: config.writeTestSize,
-      select: { id: true },
-    });
+    let existingPersons: { id: number }[] = [];
+
+    switch (modelType) {
+      case 'normalized':
+        existingPersons = await this.prisma.person.findMany({
+          take: config.writeTestSize,
+          select: { id: true },
+        });
+        break;
+      case 'jsonb':
+        existingPersons = await this.prisma.personJsonb.findMany({
+          take: config.writeTestSize,
+          select: { id: true },
+        });
+        break;
+      case 'array':
+        existingPersons = await this.prisma.personArray.findMany({
+          take: config.writeTestSize,
+          select: { id: true },
+        });
+        break;
+    }
 
     for (const person of existingPersons) {
       const newTags = generatePeople(1)[0].tags;
@@ -165,13 +181,12 @@ class BenchmarkRunner {
     }
 
     const updateResult = updateTimer.getResult();
-    const updateTotalTime = (updateResult.avg * updateResult.count) / 1000;
     console.log(
       `[${modelType.toUpperCase()}] Update: ${Timer.formatMs(
         updateResult.avg
-      )}/record (${updateResult.count} records, total=${updateTotalTime.toFixed(
-        1
-      )}s)`
+      )}/record (${updateResult.count} records, total=${Timer.formatSeconds(
+        updateResult.total
+      )})`
     );
   }
 
@@ -220,7 +235,7 @@ function parseArgs(): BenchmarkConfig {
     dataSize: 10000,
     searchIterations: 1000,
     warmupIterations: 100,
-    writeTestSize: 1000,
+    writeTestSize: 10000,
   };
 
   for (const arg of args) {
