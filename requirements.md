@@ -14,7 +14,7 @@ PostgreSQLにおける「人 + タグ」管理システムの3つの実装アプ
 
 ## データ仕様
 
-- **総人数**: 1,000,000人
+- **総人数**: 10,000人
 - **タグプール**: `["engineer", "remote", "frontend", "backend", "manager", "senior", "junior", "fullstack", "devops", "qa", "designer", "product", "marketing", "sales", "support"]`
 - **タグ割当**: 1人あたりランダムに5～15個（平均10個）
 - **分布**: 各タグ約60-80%の人に割当（現実的な偏り）
@@ -27,9 +27,9 @@ PostgreSQLにおける「人 + タグ」管理システムの3つの実装アプ
 
 | テストケース | 条件 | 期待結果数 |
 |-------------|------|-----------|
-| 単一タグ | `engineer` | ~600,000-800,000人 |
-| AND検索 | `engineer AND remote` | ~400,000-600,000人 |
-| OR検索 | `frontend OR backend` | ~800,000-1,000,000人 |
+| 単一タグ | `engineer` | ~6,000-8,00人 |
+| AND検索 | `engineer AND remote` | ~4,000-6,000人 |
+| OR検索 | `frontend OR backend` | ~8,000-10,000人 |
 
 ### ✍️ 書き込み性能テスト
 
